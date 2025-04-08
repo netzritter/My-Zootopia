@@ -20,12 +20,16 @@ def generate_animal_summary(animals):
     """Generate a string with animal information."""
     animal_info = ""
     for animal in animals:
-        animal_info += '<li class="cards__item">'
-        animal_info += f"Name: {animal['name']}<br/>\n"
-        animal_info += f"Diet: {animal.get('characteristics', {}).get('diet', 'Unknown')}<br/>\n"
-        animal_info += f"Location: {animal['locations'][0]}<br/>\n"
-        animal_info += f"Type: {animal.get('characteristics', {}).get('type', 'Unknown')}<br/>\n\n"
-        animal_info += '</li>'
+        unique_animal_html = f'''
+        <li class="cards__item">
+            <div class="card__title">{animal['name']}</div>
+            <p class="card__text">
+                <strong>Diet:</strong> {animal.get('characteristics', {}).get('diet', 'Unknown')}<br/>
+                <strong>Location:</strong> {animal['locations'][0]}<br/>
+                <strong>Type:</strong> {animal.get('characteristics', {}).get('type', 'Unknown')}<br/>
+            </p>
+        </li>'''
+        animal_info += unique_animal_html
     return animal_info
 
 
