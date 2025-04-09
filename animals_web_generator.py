@@ -1,4 +1,16 @@
 import json
+import requests
+
+def fetch_animals_via_api(animal_name):
+    name = 'fox'
+    api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
+    response = requests.get(api_url, headers={'X-Api-Key': 'NNR+gvwnOieCOlD1UTKwgg==TOmLuXY9iC6jQMko'})
+    if response.status_code == requests.codes.ok:
+        return response.json()
+    else:
+        print("Error:", response.status_code, response.text)
+        return []
+
 
 def load_data(file_path):
     """Load a JSON file."""
@@ -16,20 +28,24 @@ def read_html(file_path):
         return ""
 
 
+def serialize_animal(animal_obj):
+    unique_animal_html = f'''
+        <li class="cards__item">
+            <div class="card__title">{animal_obj['name']}</div>
+            <p class="card__text">
+                <strong>Diet:</strong> {animal_obj.get('characteristics', {}).get('diet', 'Unknown')}<br/>
+                <strong>Location:</strong> {animal_obj['locations'][0]}<br/>
+                <strong>Type:</strong> {animal_obj.get('characteristics', {}).get('type', 'Unknown')}<br/>
+            </p>
+        </li>'''
+    return unique_animal_html
+
+
 def generate_animal_summary(animals):
     """Generate a string with animal information."""
     animal_info = ""
     for animal in animals:
-        unique_animal_html = f'''
-        <li class="cards__item">
-            <div class="card__title">{animal['name']}</div>
-            <p class="card__text">
-                <strong>Diet:</strong> {animal.get('characteristics', {}).get('diet', 'Unknown')}<br/>
-                <strong>Location:</strong> {animal['locations'][0]}<br/>
-                <strong>Type:</strong> {animal.get('characteristics', {}).get('type', 'Unknown')}<br/>
-            </p>
-        </li>'''
-        animal_info += unique_animal_html
+        animal_info += serialize_animal(animal)
     return animal_info
 
 
@@ -38,8 +54,8 @@ def create_final_html(animals):
     template = read_html("animals_template.html")
     animal_data_string = generate_animal_summary(animals)
 
-    if template is None or animal_data_string is None:
-        raise ValueError("Template or animal data string is None")
+    if not template or not animal_data_string:
+        raise ValueError("Template or animal data string is empty")
 
     final_html = template.replace("__REPLACE_ANIMALS_INFO__", animal_data_string)
 
@@ -53,8 +69,12 @@ def save_final_html_template(combined_content):
 
 
 def main():
-    # Load the animal data and the HTML template
-    animals = load_data("animals_data.json")
+    # Fetch animal data from the API instead of the local JSON file
+    animals = fetch_animals_via_api("fox")
+
+    if not animals:
+        print("No animal data found.")
+        return
     final_html = create_final_html(animals)
 
     # Write the combined content to the "animals.html" file
