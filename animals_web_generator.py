@@ -1,8 +1,8 @@
 import json
 import requests
 
-def fetch_animals_via_api(animal_name):
-    name = 'fox'
+def fetch_animals_via_api(name):
+    #name = 'fox'
     api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
     response = requests.get(api_url, headers={'X-Api-Key': 'NNR+gvwnOieCOlD1UTKwgg==TOmLuXY9iC6jQMko'})
     if response.status_code == requests.codes.ok:
@@ -69,12 +69,15 @@ def save_final_html_template(combined_content):
 
 
 def main():
+
+    display_chosen_animal = input("Enter a name of an animal: ")
     # Fetch animal data from the API instead of the local JSON file
-    animals = fetch_animals_via_api("fox")
+    animals = fetch_animals_via_api(display_chosen_animal)
 
     if not animals:
         print("No animal data found.")
         return
+
     final_html = create_final_html(animals)
 
     # Write the combined content to the "animals.html" file
