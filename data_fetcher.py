@@ -1,6 +1,10 @@
+import os
+from dotenv import load_dotenv
 import requests
 
-API_KEY = 'NNR+gvwnOieCOlD1UTKwgg==TOmLuXY9iC6jQMko'
+load_dotenv()
+
+API_KEY = os.getenv('API_KEY')
 
 def fetch_data(animal_name):
     api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(animal_name)
@@ -10,21 +14,6 @@ def fetch_data(animal_name):
     else:
         print("Error:", response.status_code, response.text)
         return []
-"""
-  Fetches the animals data for the animal 'animal_name'.
-  Returns: a list of animals, each animal is a dictionary:
-  {
-    'name': ...,
-    'taxonomy': {
-      ...
-    },
-    'locations': [
-      ...
-    ],
-    'characteristics': {
-      ...
-    }
-  },
-"""
+
 
 print(fetch_data("Fox"))
