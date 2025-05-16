@@ -15,5 +15,3 @@ def fetch_data(animal_name):
         print("Error:", response.status_code, response.text)
         return []
 
-
-print(fetch_data("Fox"))
