@@ -1,16 +1,5 @@
 import json
-import requests
-
-def fetch_animals_via_api(name):
-    #name = 'fox'
-    api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
-    response = requests.get(api_url, headers={'X-Api-Key': 'NNR+gvwnOieCOlD1UTKwgg==TOmLuXY9iC6jQMko'})
-    if response.status_code == requests.codes.ok:
-        return response.json()
-    else:
-        print("Error:", response.status_code, response.text)
-        return []
-
+import data_fetcher
 
 def load_data(file_path):
     """Load a JSON file."""
@@ -49,13 +38,20 @@ def generate_animal_summary(animals):
     return animal_info
 
 
-def create_final_html(animals):
+def create_final_html(animals, searched_name):
     """Replace placeholder with animal info and return final HTML string."""
     template = read_html("animals_template.html")
-    animal_data_string = generate_animal_summary(animals)
 
-    if not template or not animal_data_string:
+
+    if not template:
         raise ValueError("Template or animal data string is empty")
+
+    if not animals:
+        animal_data_string = f'<h2 style="text-align: center;">The animal "{searched_name}" doesn\'t exist.</h2>'
+
+    else:
+        animal_data_string = generate_animal_summary(animals)
+
 
     final_html = template.replace("__REPLACE_ANIMALS_INFO__", animal_data_string)
 
@@ -71,14 +67,10 @@ def save_final_html_template(combined_content):
 def main():
 
     display_chosen_animal = input("Enter a name of an animal: ")
-    # Fetch animal data from the API instead of the local JSON file
-    animals = fetch_animals_via_api(display_chosen_animal)
+    # Fetch animal data from the Ninjas API
+    animals = data_fetcher.fetch_data(display_chosen_animal)
 
-    if not animals:
-        print("No animal data found.")
-        return
-
-    final_html = create_final_html(animals)
+    final_html = create_final_html(animals, display_chosen_animal)
 
     # Write the combined content to the "animals.html" file
     save_final_html_template(final_html)
